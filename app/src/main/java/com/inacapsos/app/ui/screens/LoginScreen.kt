@@ -35,8 +35,8 @@ fun LoginScreen(
     val repository = remember { InacapRepositoryImpl() }
     val scope = rememberCoroutineScope()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("testuser@inacapsos.cl") }
+    var password by remember { mutableStateOf("password") }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -92,18 +92,17 @@ fun LoginScreen(
                         error = null
                         try {
                             val response = repository.login(email.trim(), password)
-                            response.user?.let { user ->
-                                // AppSession.token = response.token // El token ya no está en la respuesta
-                                AppSession.userId = user.id
-                                AppSession.userName = user.nombre
+                            if (response.user != null) {
+                                AppSession.userId = response.user.id
+                                AppSession.userName = response.user.nombre
                                 onLoginSuccess()
-                            } ?: run {
+                            } else {
                                 error = response.message ?: "Usuario o contraseña incorrectos"
                             }
-                            isLoading = false
                         } catch (e: Exception) {
-                            isLoading = false
                             error = e.message ?: "No se pudo iniciar sesión"
+                        } finally {
+                            isLoading = false
                         }
                     }
                 },

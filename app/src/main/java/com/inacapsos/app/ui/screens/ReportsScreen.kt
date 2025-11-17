@@ -35,14 +35,13 @@ fun ReportsScreen() {
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        val token = AppSession.token
         val userId = AppSession.userId
-        if (!token.isNullOrBlank()) {
+        if (!userId.isNullOrBlank()) {
             isLoading = true
             error = null
             scope.launch {
                 try {
-                    reports = repository.getReportes(token = token, usuarioId = userId)
+                    reports = repository.getReportes(usuarioId = userId)
                 } catch (e: Exception) {
                     error = e.message ?: "No se pudieron cargar los reportes."
                 } finally {
@@ -74,7 +73,8 @@ fun ReportsScreen() {
             Text("No tienes reportes registrados.")
         } else {
             LazyColumn {
-                items(reports) { report ->
+                items(reports) {
+                    report ->
                     Card(
                         modifier = Modifier
                             .padding(vertical = 4.dp),
