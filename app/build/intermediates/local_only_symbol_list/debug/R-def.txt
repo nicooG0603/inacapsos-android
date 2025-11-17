@@ -1,0 +1,10 @@
+R_DEF: Internal format may change without notice
+local
+color md_theme_background
+color md_theme_onPrimary
+color md_theme_onSurface
+color md_theme_primary
+color md_theme_surface
+string app_name
+style Theme.InacapSOS
+xml network_security_config
