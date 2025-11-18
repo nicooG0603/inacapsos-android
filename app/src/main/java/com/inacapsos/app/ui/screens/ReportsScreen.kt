@@ -1,24 +1,15 @@
 package com.inacapsos.app.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.inacapsos.app.core.AppSession
 import com.inacapsos.app.data.remote.dto.ReportDto
@@ -27,78 +18,79 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ReportsScreen() {
-    val repository = remember { InacapRepositoryImpl() }
-    val scope = rememberCoroutineScope()
+    val inacapRed = Color(0xFFCC0000)
+    val repo = remember { InacapRepositoryImpl() }
 
     var reports by remember { mutableStateOf<List<ReportDto>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(true) }
+
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        val userId = AppSession.userId
-        if (!userId.isNullOrBlank()) {
-            isLoading = true
-            error = null
-            scope.launch {
-                try {
-                    reports = repository.getReportes(usuarioId = userId)
-                } catch (e: Exception) {
-                    error = e.message ?: "No se pudieron cargar los reportes."
-                } finally {
-                    isLoading = false
-                }
-            }
+        scope.launch {
+            loading = false
+            // cuando haya API: reports = repo.getReportes(...)
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Mis reportes",
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column {
 
-        if (isLoading) {
-            Text("Cargando...")
-        } else if (error != null) {
-            Text(
-                text = error!!,
-                color = MaterialTheme.colorScheme.error
-            )
-        } else if (reports.isEmpty()) {
-            Text("No tienes reportes registrados.")
-        } else {
-            LazyColumn {
-                items(reports) {
-                    report ->
-                    Card(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(
-                                text = report.titulo,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = report.descripcion,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Estado: ${report.estado}",
-                                style = MaterialTheme.typography.labelMedium
-                            )
+            // 🔴 HEADER
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(inacapRed)
+                    .padding(16.dp)
+            ) {
+                Column {
+                    Text(
+                        "Mis reportes",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Estado de los reportes enviados",
+                        color = Color.White.copy(alpha = 0.85f)
+                    )
+                }
+            }
+
+            // 🩶 FONDO GRIS CLARO
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(16.dp)
+            ) {
+                if (loading) {
+                    Text("Cargando...")
+                } else if (reports.isEmpty()) {
+                    Text("No tienes reportes registrados.")
+                } else {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(reports) {
+                            ReportCardItem(it)
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ReportCardItem(report: ReportDto) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(report.titulo, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(report.descripcion, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f))
         }
     }
 }
