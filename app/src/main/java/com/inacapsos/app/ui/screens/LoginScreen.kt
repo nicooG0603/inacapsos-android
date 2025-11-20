@@ -21,10 +21,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.inacapsos.app.core.AppSession
+import com.inacapsos.app.core.UserSession
 import com.inacapsos.app.data.repository.InacapRepositoryImpl
 import kotlinx.coroutines.launch
 
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
+    val context = LocalContext.current
     val repository = remember { InacapRepositoryImpl() }
     val scope = rememberCoroutineScope()
 
@@ -93,8 +95,7 @@ fun LoginScreen(
                         try {
                             val response = repository.login(email.trim(), password)
                             if (response.user != null) {
-                                AppSession.userId = response.user.id
-                                AppSession.userName = response.user.nombre
+                                UserSession.saveUserId(context, response.user.id)
                                 onLoginSuccess()
                             } else {
                                 error = response.message ?: "Usuario o contraseña incorrectos"
