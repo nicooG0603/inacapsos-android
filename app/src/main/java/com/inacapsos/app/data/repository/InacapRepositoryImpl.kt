@@ -18,8 +18,8 @@ class InacapRepositoryImpl : InacapRepository {
         return api.getReportes(usuarioId = usuarioId)
     }
 
-    override suspend fun reportIncident(incident: IncidenteDto) {
-        api.reportIncident(incident = incident)
+    override suspend fun reportIncident(incidentData: Map<String, Any>) {
+        api.reportIncident(incidentData = incidentData)
     }
 
     override suspend fun getIncidentes(): List<IncidenteDto> {

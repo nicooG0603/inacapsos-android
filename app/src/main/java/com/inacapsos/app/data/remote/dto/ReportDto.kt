@@ -8,3 +8,6 @@ data class ReportDto(
     val fecha: String,
     val estado: String
 )
+
+// NO SE ESTA UTILIZANDO, RECOMIENDO BORRARLO Y SOLO UTILIZAR
+// EL ARCHIVO 'IncidenteDto.kt'

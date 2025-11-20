@@ -1,205 +1,210 @@
 package com.inacapsos.app.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.* // Importamos todos los básicos rellenos
+// Eliminamos importaciones de Outlined específicas que causaban error si no tenías la librería
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.inacapsos.app.core.AppSession
 
 @Composable
 fun ProfileScreen(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onLogin: () -> Unit
 ) {
-    val inacapRed = Color(0xFFCC0000)
+    val inacapRed = Color(0xFFD52B1E) // Rojo Institucional
+    val isLoggedIn = AppSession.userId != null // Estado de la sesión
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-
-            // 🔴 HEADER SUPERIOR
+    if (isLoggedIn) {
+        // ============================================================
+        // VISTA 1: USUARIO LOGUEADO
+        // ============================================================
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+        ) {
+            // --- Encabezado Rojo ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(inacapRed)
-                    .padding(horizontal = 16.dp, vertical = 24.dp),
-                contentAlignment = Alignment.CenterStart
+                    .height(240.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Perfil",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Configuración de tu cuenta InacapSOS",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.85f)
-                    )
-                }
-            }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = inacapRed,
+                            shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                        )
+                )
 
-            // 🔲 CUERPO CON FONDO GRIS SUAVE
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                // AVATAR + NOMBRE
                 Column(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(bottom = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Surface(
+                    Text(
+                        text = "Mi Perfil",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Foto de Perfil
+                    Box(
                         modifier = Modifier
+                            .size(100.dp)
                             .clip(CircleShape)
-                            .height(80.dp)
-                            .fillMaxWidth(0.28f),
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shadowElevation = 3.dp
+                            .background(Color.White)
+                            .padding(4.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "U",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Foto de perfil",
+                            modifier = Modifier.size(60.dp),
+                            tint = Color.Gray
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Usuario InacapSOS",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = "Estudiante Inacap",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "usuario@correo.cl",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        text = "estudiante@inacapmail.cl",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.8f)
                     )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(18.dp))
+            // --- Lista de Opciones (Menu) ---
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // REEMPLAZO DE ÍCONOS PROBLEMÁTICOS POR ÍCONOS SEGUROS (CORE)
+                ProfileOptionItem(icon = Icons.Default.Edit, text = "Editar Perfil")
+                ProfileOptionItem(icon = Icons.Default.Notifications, text = "Notificaciones")
+                ProfileOptionItem(icon = Icons.Default.Lock, text = "Seguridad") // Antes Security (Outlined)
+                ProfileOptionItem(icon = Icons.Default.Info, text = "Ayuda y Soporte") // Antes Help
 
-                // CARD DATOS PERSONALES
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Datos personales",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                        ProfileFieldRow("Nombre", "Usuario Inacap")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ProfileFieldRow("Correo institucional", "usuario@correo.cl")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ProfileFieldRow("Sede", "Por definir")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ProfileFieldRow("Rol", "Estudiante / Usuario")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // CARD PREFERENCIAS (SIN HABLAR DE API)
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Preferencias y seguridad",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Configura opciones como notificaciones, contacto de emergencia y otras preferencias de tu cuenta.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // BOTÓN PRINCIPAL
+                // Botón Cerrar Sesión
                 Button(
-                    onClick = { /* TODO: navegación a edición de perfil si la agregan */ },
-                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onLogout,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                ) {
+                    Text(
+                        text = "Cerrar Sesión",
+                        color = inacapRed,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
+    } else {
+        // ============================================================
+        // VISTA 2: INVITADO
+        // ============================================================
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                // Icono grande y tenue
+                Icon(
+                    // CAMBIO: Usamos 'Person' en lugar de 'PersonOff' que da error
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = "Modo Invitado",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Estás navegando como invitado. Para acceder a tu historial académico, credencial virtual y reportar incidentes, necesitas identificarte.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                // Botón Principal de Iniciar Sesión
+                Button(
+                    onClick = onLogin,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = inacapRed,
                         contentColor = Color.White
-                    )
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
                 ) {
-                    Text("Editar datos del perfil")
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // CERRAR SESIÓN
-                TextButton(
-                    onClick = onLogout,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                    // CAMBIO: Usamos 'ArrowForward' en lugar de 'Login' que da error
+                    Icon(Icons.Default.ArrowForward, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Cerrar sesión",
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        text = "Iniciar Sesión",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -208,23 +213,42 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileFieldRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+fun ProfileOptionItem(icon: ImageVector, text: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium
-        )
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            // CAMBIO: Usamos 'ArrowForward' en lugar de 'ChevronRight' si daba error,
+            // aunque ChevronRight suele ser básico, ArrowForward es infalible.
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = null,
+                tint = Color.LightGray
+            )
+        }
     }
 }

@@ -51,7 +51,7 @@ fun AppNavHost(
             composable(Screen.Splash.route) {
                 SplashScreen(
                     onFinished = {
-                        navController.navigate(Screen.Login.route) {
+                        navController.navigate(Screen.Map.route) {  // Cambie de Login -> Mapa
                             popUpTo(Screen.Splash.route) { inclusive = true }
                         }
                     }
@@ -73,7 +73,7 @@ fun AppNavHost(
                 SosScreen()
             }
             composable(Screen.Map.route) {
-                MapScreen()
+                MapScreen(navController = navController)
             }
             composable(Screen.Reports.route) {
                 ReportsScreen()
@@ -84,6 +84,10 @@ fun AppNavHost(
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Home.route) { inclusive = true }
                         }
+                    },
+                    // 💡 CAMBIO 5: Agregamos la acción onLogin
+                    onLogin = {
+                        navController.navigate(Screen.Login.route) // Navega al Login
                     }
                 )
             }

@@ -21,7 +21,7 @@ interface InacapApi {
 
     @POST("incidente")
     suspend fun reportIncident(
-        @Body incident: IncidenteDto
+        @Body incidentData: Map<String, @JvmSuppressWildcards Any>
     )
 
     @GET("incidente")
