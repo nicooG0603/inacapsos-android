@@ -37,10 +37,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.preference.PreferenceManager
-import com.inacapsos.app.core.AppSession
+import com.inacapsos.app.core.UserSession
 import com.inacapsos.app.data.remote.dto.FechaDto
 import com.inacapsos.app.data.remote.dto.GeoPointDto
 import com.inacapsos.app.data.remote.dto.IncidenteDto
+import com.inacapsos.app.data.remote.dto.UsuarioIdDto
 import com.inacapsos.app.data.repository.InacapRepositoryImpl
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
@@ -71,6 +72,7 @@ fun MapScreen() {
     )
 
     LaunchedEffect(Unit) {
+        UserSession.loadUserId(context)
         scope.launch {
             isLoading = true
             try {
@@ -145,19 +147,23 @@ fun MapScreen() {
                                                 seconds = now.time / 1000,
                                                 nanoseconds = (now.time % 1000) * 1_000_000L
                                             )
-                                            repository.reportIncident(
-                                                incident = IncidenteDto(
+                                            val userId = UserSession.userId
+                                            if (userId != null) {
+                                                val newIncident = IncidenteDto(
                                                     tipo = incident.name,
                                                     descripcion = "Descripción de ejemplo",
-                                                    fecha = fechaDto,
                                                     ubicacion = GeoPointDto(latitude = -33.4489, longitude = -70.6693),
-                                                    usuario_id = AppSession.userId ?: "",
-                                                    estado = "activo",
+                                                    usuario_id = UsuarioIdDto(id = userId),
+                                                    fecha = fechaDto,
+                                                    estado = "enviado",
                                                     evidencia_url = ""
                                                 )
-                                            )
-                                            incidentes = repository.getIncidentes()
-                                            showDialog = false
+                                                repository.reportIncident(newIncident)
+                                                incidentes = repository.getIncidentes()
+                                                showDialog = false
+                                            } else {
+                                                error = "ID de usuario no encontrado."
+                                            }
                                         } catch (e: Exception) {
                                             error = e.message ?: "Ocurrió un error inesperado"
                                         } finally {
