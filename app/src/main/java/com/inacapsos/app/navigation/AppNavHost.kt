@@ -87,6 +87,12 @@ fun AppNavHost(
                     }
                 )
             }
+
+            // 👇👇👇 ÚNICO AGREGADO: ruta para el panel del guardia
+            composable(Screen.GuardPanel.route) {
+                GuardPanelScreen(navController = navController)
+            }
+            // 👆👆👆
         }
     }
 }
